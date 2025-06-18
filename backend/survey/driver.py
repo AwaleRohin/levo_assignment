@@ -8,6 +8,7 @@ from survey.endpoints.survey_endpoint import (
     SurveyAPI,
     SurveyStatsAPI,
     SurveyUploadAPI,
+    ShareSurveyAPI,
 )
 from survey.utils.utils import get_logger
 
@@ -27,6 +28,7 @@ api.add_resource(ResponseAPI,
     '/responses/<int:response_id>'
 )
 api.add_resource(SurveyStatsAPI, '/surveys/<int:survey_id>/stats')
+api.add_resource(ShareSurveyAPI, '/surveys/<int:survey_id>/share')
 
 CORS(app)
 api_enabled_app = app

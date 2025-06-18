@@ -19,3 +19,4 @@ requests==2.32.2
 serverless-wsgi==2.0.0
 sqlalchemy==2.0.30
 werkzeug==3.0.3
+Flask-Mail==0.10.0

@@ -8,6 +8,7 @@ from sqlalchemy.orm import joinedload
 from marshmallow import ValidationError
 
 from survey.app import Session
+from survey.utils.email import send_email
 from survey.models.models import Survey, Question, Response
 from survey.models.models import (
     survey_schema, response_schema
@@ -72,7 +73,7 @@ class SurveyAPI(Resource):
 class SurveyUploadAPI(Resource):
     def post(self):
         """Create survey from CSV upload"""
-        file = request.files.get('file')
+        file = request.files.get('csv')
         title = request.form.get("title", "Untitled Survey")
         description = request.form.get("description", "Untitled Survey")
 
@@ -197,3 +198,27 @@ class SurveyStatsAPI(Resource):
             survey_service = SurveyService(session)
             stats = survey_service.get_survey_stats(survey_id)
             return stats
+
+
+class ShareSurveyAPI(Resource):
+    def post(self, survey_id):
+        data = request.get_json()
+        emails = data.get("emails")
+        survey_link = data.get("survey_link")
+
+        if not emails or not survey_link:
+            return {"error": "Missing required fields"}, 400
+
+        try:
+
+            result = send_email(
+                subject="You're Invited to Take a Survey",
+                recipients_str=emails,
+                body=f"Hi there!\n\nPlease complete the survey at:\n{survey_link}",
+                html=f"<p>Please take the survey <a href='{survey_link}'>here</a>.</p>"
+            )
+            print(f"Email send result: {result}")
+            return {"message": "Survey email(s) sent!"}, 200
+        except Exception as e:
+            print(f"Error sending email: {e}")
+            return {"error": f"Failed to send email: {str(e)}"}, 500
