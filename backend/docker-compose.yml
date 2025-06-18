@@ -1,0 +1,32 @@
+version: '3.8'
+
+volumes:
+  postgres_db_data:
+
+services:
+  backend:
+    build: .
+    ports:
+      - "5001:5001"
+    environment:
+      FLASK_APP: survey/wsgi.py
+      FLASK_RUN_PORT: 5001
+      FLASK_ENV: development
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/survey_db
+    volumes:
+      - .:/app 
+    command: flask run --host=0.0.0.0  --reload
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    restart: always
+    volumes:
+      - postgres_db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: survey_db
+    ports:
+      - "5438:5432"
