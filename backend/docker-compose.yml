@@ -8,11 +8,8 @@ services:
     build: .
     ports:
       - "5001:5001"
-    environment:
-      FLASK_APP: survey/wsgi.py
-      FLASK_RUN_PORT: 5001
-      FLASK_ENV: development
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/survey_db
+    env_file:
+      - .env
     volumes:
       - .:/app 
     command: flask run --host=0.0.0.0  --reload
