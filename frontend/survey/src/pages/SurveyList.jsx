@@ -81,6 +81,13 @@ export default function SurveyList() {
                   >
                     <Edit size={18} />
                   </Link>
+									<Link
+                    to={`/surveys/${survey.id}/take`}
+                    className="p-2 text-gray-600 hover:text-purple-600"
+                    title="Take Survey"
+                  >
+                    <ListCheck size={18} />
+                  </Link>
                   <button
                     onClick={() => openShareDialog(survey.id)}
                     className="p-2 text-white-600 hover:text-blue-600"

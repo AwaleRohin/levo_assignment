@@ -54,3 +54,14 @@ export const uploadSurveyCSV = async (formData) => {
     throw error; // let the calling component catch this
   }
 };
+
+
+export const submitSurvey = async (id, data) => {
+  try {
+    const response = await api.post(`/surveys/${id}/submit`, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating survey:", error);
+    throw error; // let the calling component catch this
+  }
+};

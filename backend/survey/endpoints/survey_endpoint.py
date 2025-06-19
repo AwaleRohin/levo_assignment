@@ -166,7 +166,7 @@ class ResponseAPI(Resource):
                 if not response:
                     raise NotFound(f"Response {response_id} not found")
 
-                for field in ['answers', 'respondent_email']:
+                for field in ['answers']:
                     if field in data:
                         setattr(response, field, data[field])
 
