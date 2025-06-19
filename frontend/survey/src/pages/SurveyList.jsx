@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api";
 import { Plus, Edit, Trash2, ListCheck, BarChart3, Share2 } from 'lucide-react';
+import ShareSurveyDialog from "../components/ShareSurveyDialog";
 
 export default function SurveyList() {
   const [surveys, setSurveys] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [shareDialog, setShareDialog] = useState({ open: false, surveyId: null });
 
   const fetchSurveys = async () => {
     try {
@@ -29,6 +31,13 @@ export default function SurveyList() {
       setError("Failed to delete survey.");
       console.log(err);
     }
+  };
+  const openShareDialog = (surveyId) => {
+    setShareDialog({ open: true, surveyId });
+  };
+
+  const closeShareDialog = () => {
+    setShareDialog({ open: false, surveyId: null });
   };
 
   useEffect(() => {
@@ -78,6 +87,13 @@ export default function SurveyList() {
                     <Edit size={18} />
                   </Link>
                   <button
+                    onClick={() => openShareDialog(survey.id)}
+                    className="p-2 text-white-600 hover:text-blue-600"
+                    title="Share Survey"
+                  >
+                    <Share2 size={18} />
+                  </button>
+                  <button
                     onClick={() => deleteSurvey(survey.id)}
                     className="p-2 text-white-600 hover:text-red-600"
                     title="Delete Survey"
@@ -90,6 +106,11 @@ export default function SurveyList() {
           ))}
         </div>
       )}
+      <ShareSurveyDialog
+        isOpen={shareDialog.open}
+        onClose={closeShareDialog}
+        surveyId={shareDialog.surveyId}
+      />
     </div>
   );
 }
