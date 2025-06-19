@@ -39,3 +39,18 @@ export const updateSurvey = async (id, data) => {
     throw error; // let the calling component catch this
   }
 };
+
+
+export const uploadSurveyCSV = async (formData) => {
+  try {
+    const response = await axios.post("http://localhost:5004/surveys/upload", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data", // optional; axios handles this well even if omitted
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error creating survey:", error);
+    throw error; // let the calling component catch this
+  }
+};

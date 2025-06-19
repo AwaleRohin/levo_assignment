@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import api from "../api";
 import { Plus, Edit, Trash2, ListCheck, BarChart3, Share2 } from 'lucide-react';
 import ShareSurveyDialog from "../components/ShareSurveyDialog";
+import SurveyDropDownOption from "../components/SurveyDropDownOption";
 
 export default function SurveyList() {
   const [surveys, setSurveys] = useState([]);
@@ -15,8 +16,8 @@ export default function SurveyList() {
       const res = await api.get("/surveys");
       setSurveys(res.data);
     } catch (err) {
-      setError("Failed to load surveys.");
-      console.log(err);
+			setError("Failed to load surveys.");
+			console.log(err)
     } finally {
       setLoading(false);
     }
@@ -29,7 +30,7 @@ export default function SurveyList() {
       setSurveys(prev => prev.filter(s => s.id !== id));
     } catch (err) {
       setError("Failed to delete survey.");
-      console.log(err);
+			console.log(err)
     }
   };
   const openShareDialog = (surveyId) => {
@@ -48,13 +49,7 @@ export default function SurveyList() {
     <div className="max-w-4xl min-w-2xl mx-auto space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-white-900">Surveys</h1>
-        <Link
-          to="/surveys/create"
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
-        >
-          <Plus size={20} />
-          Create Survey
-        </Link>
+        <SurveyDropDownOption />
       </div>
 
       {error && (
