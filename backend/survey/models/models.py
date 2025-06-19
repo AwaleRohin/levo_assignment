@@ -8,6 +8,7 @@ class Survey(db.Model):
     description = db.Column(db.Text)
     questions = db.relationship('Question', backref='survey', cascade='all, delete-orphan')
     published = db.Column(db.Boolean(), default=True)
+    scheduled_time = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.now())
 
 

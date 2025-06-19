@@ -20,3 +20,5 @@ serverless-wsgi==2.0.0
 sqlalchemy==2.0.30
 werkzeug==3.0.3
 Flask-Mail==0.10.0
+celery==5.5.3
+redis==6.2.0

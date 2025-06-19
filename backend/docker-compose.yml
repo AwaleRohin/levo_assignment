@@ -4,7 +4,7 @@ volumes:
   postgres_db_data:
 
 services:
-  backend:
+  backend: &backend
     build: .
     ports:
       - "5001:5001"
@@ -15,6 +15,7 @@ services:
     command: flask run --host=0.0.0.0  --reload
     depends_on:
       - db
+      - redis
 
   db:
     image: postgres:15
@@ -27,3 +28,18 @@ services:
       POSTGRES_DB: survey_db
     ports:
       - "5438:5432"
+
+  celery_worker:
+    <<: *backend
+    ports: [ ]
+    expose: [ ]
+    command: celery -A survey.celery worker --loglevel=info
+    depends_on:
+      - db
+      - backend
+      - redis
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
