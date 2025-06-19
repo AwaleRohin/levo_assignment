@@ -65,3 +65,14 @@ export const submitSurvey = async (id, data) => {
     throw error; // let the calling component catch this
   }
 };
+
+
+export const getSurveyStats = async () => {
+  try {
+    const response = await api.get(`/surveys/stats`);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating survey:", error);
+    throw error; // let the calling component catch this
+  }
+};

@@ -4,6 +4,7 @@ import CreateSurvey from "./pages/CreateSurvey";
 import EditSurvey from "./pages/EditSurvey";
 import CSVSurveyUpload from "./pages/CSVSurveyUpload";
 import TakeSurvey from "./pages/TakeSurvey";
+import AllSurveyStats from "./pages/AllSurveyStats";
 
 import './App.css'
 
@@ -16,6 +17,7 @@ function App() {
         <Route path="/surveys/:id/edit" element={<EditSurvey />} />
         <Route path="/surveys/upload" element={<CSVSurveyUpload />} />
         <Route path="/surveys/:id/take" element={<TakeSurvey />} />
+        <Route path="/surveys/overview" element={<AllSurveyStats />} />
       </Routes>
     </Router>
   );
