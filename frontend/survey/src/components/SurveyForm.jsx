@@ -12,11 +12,13 @@ const defaultQuestion = () => ({
 
 export default function SurveyForm({ onSubmit, initialData = {} }) {
   const navigate = useNavigate();
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const [form, setForm] = useState({
     title: initialData.title || "",
     description: initialData.description || "",
     questions: [defaultQuestion()],
   });
+  const [scheduledTime, setScheduledTime] = useState("");
 
   useEffect(() => {
     if (initialData && Object.keys(initialData).length > 0) {
@@ -27,6 +29,7 @@ export default function SurveyForm({ onSubmit, initialData = {} }) {
           ? initialData.questions
           : [defaultQuestion()],
       });
+      setScheduledTime(initialData.scheduled_time || "")
     }
   }, [initialData]);
 
@@ -69,9 +72,9 @@ export default function SurveyForm({ onSubmit, initialData = {} }) {
       questions: prev.questions.map(q =>
         q.id === qid
           ? {
-              ...q,
-              options: q.options.map((opt, i) => (i === index ? value : opt)),
-            }
+            ...q,
+            options: q.options.map((opt, i) => (i === index ? value : opt)),
+          }
           : q
       ),
     }));
@@ -119,6 +122,18 @@ export default function SurveyForm({ onSubmit, initialData = {} }) {
             </div>
           </div>
         </div>
+        <div className="bg-white p-6 rounded-lg border">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Schedule Publish Time (optional)
+          </label>
+          <input
+            type="datetime-local"
+            value={scheduledTime}
+            onChange={e => setScheduledTime(e.target.value)}
+            className="w-full px-3 py-2 border text-gray-700 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
 
         <div className="space-y-4">
           <div className="flex justify-between items-center">
@@ -211,11 +226,48 @@ export default function SurveyForm({ onSubmit, initialData = {} }) {
         <div className="flex gap-4">
           <button
             type="button"
-            onClick={() => onSubmit(form)}
+            onClick={() =>
+              onSubmit({
+                ...form,
+                published: true,
+                scheduled_time: null,
+              })
+            }
             className="bg-blue-600 text-white px-6 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
           >
             <Save size={20} />
-            {initialData.id ? "Update Survey" : "Create Survey"}
+            {initialData.id ? "Update & Publish" : "Create & Publish"}
+          </button>
+
+          <button
+            type="button"
+            onClick={() =>
+              onSubmit({
+                ...form,
+                published: false,
+                scheduled_time: null,
+              })
+            }
+            className="bg-yellow-500 text-white px-6 py-2 rounded-lg hover:bg-yellow-600"
+          >
+            {initialData.id ? "Update as Draft" : "Save as Draft"}
+            
+          </button>
+
+          <button
+            type="button"
+            disabled={!scheduledTime}
+            onClick={() =>
+              onSubmit({
+                ...form,
+                published: false,
+                scheduled_time: scheduledTime,
+                timezone: timeZone
+              })
+            }
+            className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 disabled:opacity-50"
+          >
+            Schedule Publish
           </button>
           <button
             type="button"

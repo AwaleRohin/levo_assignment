@@ -100,12 +100,17 @@ export default function TakeSurvey() {
 
   if (loading)
     return (
-      <div className="text-center text-lg text-gray-600 mt-20">Loading survey...</div>
+      <div className="text-center text-lg text-gray-600 mt-10">Loading survey...</div>
     );
 
   if (!survey)
     return (
-      <div className="text-center text-red-600 text-lg mt-20">Survey not found</div>
+      <div className="text-center text-red-600 text-lg mt-10">Survey not found</div>
+    );
+
+  if (!survey.published)
+    return (
+      <div className="text-center text-yellow-400 text-lg mt-10">Survey is not published yet.</div>
     );
 
   const currentQ = survey.questions[currentQuestionIndex];
