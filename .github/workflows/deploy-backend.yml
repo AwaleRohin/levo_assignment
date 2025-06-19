@@ -1,0 +1,84 @@
+name: Deploy Flask Backend
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+      - name: Add EC2 host to known_hosts
+        run: ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Clean & prepare EC2
+        run: |
+          ssh ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+            # Ensure Postgres is running
+            if ! docker ps | grep -q my_postgres; then
+              echo "Starting Postgres..."
+              cd ~/postgres
+              docker-compose up -d
+            fi
+
+            # Ensure Redis is running
+            if ! docker ps | grep -q my_redis; then
+              echo "Starting Redis..."
+              cd ~/redis
+              docker-compose up -d
+            fi
+
+            # Remove old app
+            docker stop backend_app celery_worker || true
+            docker rm backend_app celery_worker || true
+            rm -rf ~/backend
+            mkdir -p ~/backend
+          EOF
+
+      - name: Copy Backend
+        run: |
+          scp -r ./backend/* ubuntu@${{ secrets.EC2_HOST }}:~/backend
+
+      - name: Build and Run Containers
+        run: |
+          ssh ubuntu@${{ secrets.EC2_HOST }} << EOF
+            cd ~/backend
+
+            docker build -t flask_app .
+
+            # Run Gunicorn container
+            docker run -d \
+              --name backend_app \
+              -p 5000:5000 \
+              -e FLASK_APP=${{ secrets.FLASK_APP }} \
+              -e FLASK_RUN_PORT=${{ secrets.FLASK_RUN_PORT }} \
+              -e FLASK_ENV=${{ secrets.FLASK_ENV }} \
+              -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+              -e MAIL_USERNAME=${{ secrets.MAIL_USERNAME }} \
+              -e MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }} \
+              -e MAIL_DEFAULT_SENDER=${{ secrets.MAIL_DEFAULT_SENDER }} \
+              -e REDIS_BROKER_URL=${{ secrets.REDIS_BROKER_URL }} \
+              -e REDIS_RESULT_BACKEND=${{ secrets.REDIS_RESULT_BACKEND }} \
+              flask_app \
+              gunicorn -b 0.0.0.0:5000 survey.wsgi:app
+
+            # Run Celery container
+            docker run -d \
+              --name celery_worker \
+              -e FLASK_APP=${{ secrets.FLASK_APP }} \
+              -e FLASK_ENV=${{ secrets.FLASK_ENV }} \
+              -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+              -e REDIS_BROKER_URL=${{ secrets.REDIS_BROKER_URL }} \
+              -e REDIS_RESULT_BACKEND=${{ secrets.REDIS_RESULT_BACKEND }} \
+              flask_app \
+              celery -A survey.celery worker --loglevel=info
+          EOF
