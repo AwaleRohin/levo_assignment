@@ -27,7 +27,10 @@ api.add_resource(ResponseAPI,
     '/surveys/<int:survey_id>/submit',
     '/responses/<int:response_id>'
 )
-api.add_resource(SurveyStatsAPI, '/surveys/<int:survey_id>/stats')
+api.add_resource(SurveyStatsAPI,
+    '/surveys/<int:survey_id>/stats',
+    '/surveys/stats'
+)
 api.add_resource(ShareSurveyAPI, '/surveys/<int:survey_id>/share')
 
 CORS(app)

@@ -192,11 +192,14 @@ class ResponseAPI(Resource):
 
 class SurveyStatsAPI(Resource):
     """New API for survey statistics"""
-    def get(self, survey_id):
+    def get(self, survey_id=None):
         """Get survey statistics"""
         with Session() as session:
             survey_service = SurveyService(session)
-            stats = survey_service.get_survey_stats(survey_id)
+            if survey_id:
+                stats = survey_service.get_survey_stats(survey_id)
+            else:
+                stats = survey_service.get_all_survey_stats()
             return stats
 
 
