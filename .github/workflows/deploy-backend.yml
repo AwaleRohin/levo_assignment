@@ -30,13 +30,6 @@ jobs:
               docker-compose up -d
             fi
 
-            # Ensure Redis is running
-            if ! docker ps | grep -q my_redis; then
-              echo "Starting Redis..."
-              cd ~/redis
-              docker-compose up -d
-            fi
-
             # Remove old app
             docker stop backend_app celery_worker || true
             docker rm backend_app celery_worker || true
