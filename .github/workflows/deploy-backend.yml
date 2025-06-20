@@ -3,6 +3,8 @@ name: Deploy Flask Backend
 on:
   push:
     branches: [main]
+    paths:
+      - 'backend/**'
 
 jobs:
   deploy:
