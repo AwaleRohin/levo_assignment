@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Save, Trash2, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const defaultQuestion = () => ({
   id: `temp-${Date.now()}-${Math.random()}`,
@@ -78,6 +79,11 @@ export default function SurveyForm({ onSubmit, initialData = {} }) {
           : q
       ),
     }));
+  };
+
+  const handleSubmit = (data, message) => {
+    onSubmit(data);
+    toast.success(message);
   };
 
   return (
@@ -227,11 +233,14 @@ export default function SurveyForm({ onSubmit, initialData = {} }) {
           <button
             type="button"
             onClick={() =>
-              onSubmit({
-                ...form,
-                published: true,
-                scheduled_time: null,
-              })
+              handleSubmit(
+                {
+                  ...form,
+                  published: true,
+                  scheduled_time: null,
+                },
+                initialData.id ? "Survey updated & published!" : "Survey created & published!"
+              )
             }
             className="bg-blue-600 text-white px-6 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
           >
@@ -242,28 +251,34 @@ export default function SurveyForm({ onSubmit, initialData = {} }) {
           <button
             type="button"
             onClick={() =>
-              onSubmit({
-                ...form,
-                published: false,
-                scheduled_time: null,
-              })
+              handleSubmit(
+                {
+                  ...form,
+                  published: false,
+                  scheduled_time: null,
+                },
+                initialData.id ? "Survey updated as draft!" : "Survey created as draft!"
+              )
             }
             className="bg-yellow-500 text-white px-6 py-2 rounded-lg hover:bg-yellow-600"
           >
             {initialData.id ? "Update as Draft" : "Save as Draft"}
-            
+
           </button>
 
           <button
             type="button"
             disabled={!scheduledTime}
             onClick={() =>
-              onSubmit({
-                ...form,
-                published: false,
-                scheduled_time: scheduledTime,
-                timezone: timeZone
-              })
+              handleSubmit(
+                {
+                  ...form,
+                  published: false,
+                  scheduled_time: scheduledTime,
+                  timezone: timeZone
+                },
+                initialData.id ? "Survey updated & schduled for publish!" : "Survey created & schduled for publish!!"
+              )
             }
             className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 disabled:opacity-50"
           >

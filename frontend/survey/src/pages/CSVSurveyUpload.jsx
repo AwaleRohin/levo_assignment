@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { Upload, FileText, X } from "lucide-react";
 import { uploadSurveyCSV } from "../api/index.js";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function CSVSurveyUpload() {
     const [title, setTitle] = useState("");
@@ -56,11 +57,11 @@ export default function CSVSurveyUpload() {
 
         try {
             await uploadSurveyCSV(formData);
-            alert("✅ Survey uploaded successfully!");
+            toast.success("Survey uploaded successfully!");
             navigate("/");
         } catch (err) {
             console.error("Upload failed", err);
-            alert("❌ Failed to upload survey.");
+            toast.error("Failed to upload survey.");
         }
     };
 

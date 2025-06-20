@@ -34,7 +34,7 @@ const EditSurvey = () => {
     await updateSurvey(id, formData);
     navigate("/");
   };
-	  if (loading) {
+  if (loading) {
     return <div>Loading...</div>;
   }
 
