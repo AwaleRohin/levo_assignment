@@ -45,7 +45,7 @@ export const updateSurvey = async (id, data) => {
 
 export const uploadSurveyCSV = async (formData) => {
   try {
-    const response = await axios.post("http://localhost:5004/surveys/upload", formData, {
+    const response = await axios.post(`${apiUrl}/surveys/upload`, formData, {
       headers: {
         "Content-Type": "multipart/form-data", // optional; axios handles this well even if omitted
       },

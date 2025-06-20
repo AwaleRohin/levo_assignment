@@ -1,0 +1,6 @@
+text,type,options,required,order
+"Hi, What is your name?",text,true,1
+How are you?,text,true,2
+Gender,checkbox,"['Male','Female']",true,3
+Select all that you like,multiple-choice,"['Apple', 'Banana']",true,4
+Any suggestion?,text,true,2
