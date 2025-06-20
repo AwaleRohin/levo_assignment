@@ -58,4 +58,4 @@ def handle_survey_exception(error):
 
 # Importing tasks so they get registered
 import survey.tasks.email_tasks
-import survey.tasks.schedule_publish  
+import survey.tasks.schedule_publish
