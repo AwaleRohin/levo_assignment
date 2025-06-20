@@ -82,6 +82,9 @@ jobs:
               -e FLASK_APP=${{ secrets.FLASK_APP }} \
               -e FLASK_ENV=${{ secrets.FLASK_ENV }} \
               -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+              -e MAIL_USERNAME=${{ secrets.MAIL_USERNAME }} \
+              -e MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }} \
+              -e MAIL_DEFAULT_SENDER=${{ secrets.MAIL_DEFAULT_SENDER }} \
               -e REDIS_BROKER_URL=${{ secrets.REDIS_BROKER_URL }} \
               -e REDIS_RESULT_BACKEND=${{ secrets.REDIS_RESULT_BACKEND }} \
               flask_app \
