@@ -23,3 +23,5 @@ Flask-Mail==0.10.0
 celery==5.5.3
 redis==6.2.0
 gunicorn
+pytest==8.4.1
+pytest-mock==3.14.1

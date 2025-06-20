@@ -4,9 +4,9 @@ from survey.models.models import Survey, Question, Response
 from survey.utils.exceptions import SurveyNotFoundError
 from datetime import datetime, timezone
 from survey.tasks.schedule_publish import publish_survey_task
-from dateutil import parser
-from survey.utils.utils import convert_to_utc
+from survey.utils.utils import convert_to_utc, get_logger
 
+logger = get_logger()
 
 class SurveyService:
     def __init__(self, session: Session):
@@ -21,9 +21,11 @@ class SurveyService:
         if published:
             # If published is True, scheduled_time must be None
             data["scheduled_time"] = None
+            logger.debug("Survey is marked as published; clearing scheduled_time")
         elif not scheduled_time_str:
             # If published is False and no scheduled_time, keep both
             data["scheduled_time"] = None
+            logger.debug("Survey is not published and no scheduled_time provided; setting scheduled_time to None")
 
         survey = Survey(**data)
         self.session.add(survey)
@@ -45,14 +47,21 @@ class SurveyService:
         if not published and scheduled_time_str:
             scheduled_time_utc = convert_to_utc(scheduled_time_str, timezone_name)
             delay = (scheduled_time_utc - datetime.now().replace(tzinfo=timezone.utc)).total_seconds()
-            publish_survey_task.apply_async(args=[survey.id], countdown=delay)
+            if delay > 0:
+                publish_survey_task.apply_async(args=[survey.id], countdown=delay)
+                logger.info(f"Survey id={survey.id} scheduled for publishing in {delay} seconds (UTC time: {scheduled_time_utc})")
+            else:
+                logger.warning(f"Scheduled time for survey id={survey.id} is in the past; skipping scheduling and and publishing it")
+                survey.published = True
+                survey.scheduled_time = None
+                self.session.commit()
         return survey
 
     def get_survey(self, survey_id: int) -> Survey:
         """Get a survey by ID"""
         survey = self.session.query(Survey).filter(Survey.id == survey_id).first()
         if not survey:
-            print("survey not found")
+            logger.warning(f"Survey not found for id={survey_id}")
             raise SurveyNotFoundError(survey_id)
         return survey
 
@@ -77,7 +86,9 @@ class SurveyService:
             delay = (scheduled_time_utc - datetime.now().replace(tzinfo=timezone.utc)).total_seconds()
             if delay > 0:
                 publish_survey_task.apply_async(args=[survey.id], countdown=delay)
+                logger.info(f"Survey id={survey.id} scheduled for publishing in {delay} seconds (UTC time: {scheduled_time_utc})")
             else:
+                logger.info(f"Scheduled time for survey id={survey.id} is in the past; skipping scheduling and publishing it")
                 survey.published = True
                 survey.scheduled_time = None
         else:
@@ -116,6 +127,7 @@ class SurveyService:
         self.session.query(Response).filter(Response.survey_id == survey.id).delete()
         
         self.session.delete(survey)
+        logger.info(f"Deleted survey object with id={survey_id}")
         self.session.commit()
 
     def get_survey_stats(self, survey_id: int) -> Dict[str, Any]:
@@ -133,7 +145,7 @@ class SurveyService:
             'created_at': survey.created_at.isoformat() if survey.created_at else None
         }
 
-    def get_all_survey_stats(self):
+    def get_all_survey_stats(self) -> List[Dict[str, Any]]:
         surveys = self.session.query(Survey).filter(Survey.published==True)
         stats = []
 
