@@ -84,3 +84,9 @@ jobs:
               flask_app \
               celery -A survey.celery worker --loglevel=info
           EOF
+      - name: Run DB Migrations on EC2
+        run: |
+          ssh ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+            echo "Running Flask DB Upgrade..."
+            docker exec backend_app flask db upgrade
+          EOF
