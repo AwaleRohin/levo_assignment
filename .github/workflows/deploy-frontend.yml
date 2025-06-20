@@ -21,7 +21,7 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        working-directory: frontend
+        working-directory: frontend/survey
         run: npm ci
 
       - name: Build Vite React app
