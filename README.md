@@ -26,7 +26,7 @@ A full-stack survey web application built with Flask backend and React frontend,
    ```
 ### Backend Setup (Flask)
 
-1. **Cavigate to the backend directory**
+1. **Navigate to the backend directory**
    ```bash
    cd backend
    ```
@@ -148,6 +148,14 @@ REDIS_RESULT_BACKEND=redis://redis:6379/0
 2. **Database connection**: Ensure PostgreSQL is running and credentials are correct
 3. **Redis connection**: Verify Redis is accessible for Celery tasks
 4. **Docker issues**: Try `docker compose down` and `docker compose up --build`
+
+
+## 🧪 Testing
+```bash
+# Backend tests (run inside Flask container)
+cd backend
+docker compose exec backend pytest
+```
 
 ### Logs
 
