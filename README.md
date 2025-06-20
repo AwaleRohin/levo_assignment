@@ -170,6 +170,27 @@ docker compose logs redis
 docker compose logs celery_worker
 ```
 
+## 🛠️ Future Improvements
+
+Currently, the application allows **anyone to create, edit, or delete surveys without authentication or ownership restrictions**. With more time, the following improvements would be made:
+
+- **User Authentication & Authorization**  
+  Introduce user accounts and associate each survey with its creator. This would ensure:
+  - Only authenticated users can create surveys  
+  - Users can only view or edit their own surveys  
+  - Access control is enforced both on the frontend and backend
+
+- **Survey Integration with External Platforms**  
+  Enable integration with platforms like **Google Forms**, **SurveyMonkey**, and **JotForm** to import responses into our system:  
+  - Use **webhooks** for real-time syncing of survey responses  
+  - Alternatively, set up **periodic background tasks** (e.g., every 10–15 minutes via Celery Beat) to poll external APIs for new responses
+
+- **Admin Panel**  
+  Add an administrative interface to manage users, surveys, and system-wide settings.
+
+- **Improved Validation & Error Handling**  
+  Add robust input validation and better error 
+
 ## 📞 Support
 
 For questions or issues, please [create an issue](https://github.com/AwaleRohin/levo_assignment/issues) or contact [rohinawale331@gmail.com].
