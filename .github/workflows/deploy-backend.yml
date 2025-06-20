@@ -30,6 +30,13 @@ jobs:
               docker-compose up -d
             fi
 
+            # Ensure Redis is running
+            if ! docker ps | grep -q my_redis; then
+              echo "Starting Redis..."
+              cd ~/postgres
+              docker-compose up -d
+            fi
+
             # Remove old app
             docker stop backend_app celery_worker || true
             docker rm backend_app celery_worker || true
@@ -51,6 +58,7 @@ jobs:
             # Run Gunicorn container
             docker run -d \
               --name backend_app \
+              --network backend_net \
               -p 5000:5000 \
               -e FLASK_APP=${{ secrets.FLASK_APP }} \
               -e FLASK_RUN_PORT=${{ secrets.FLASK_RUN_PORT }} \
@@ -67,6 +75,7 @@ jobs:
             # Run Celery container
             docker run -d \
               --name celery_worker \
+              --network backend_net \
               -e FLASK_APP=${{ secrets.FLASK_APP }} \
               -e FLASK_ENV=${{ secrets.FLASK_ENV }} \
               -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
