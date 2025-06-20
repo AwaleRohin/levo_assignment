@@ -21,13 +21,18 @@ jobs:
         with:
           node-version: 18
 
+      - name: Create .env.production file
+        working-directory: frontend/survey
+        run: |
+          echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" > .env.production
+
       - name: Install dependencies
         working-directory: frontend/survey
         run: npm ci
 
       - name: Build Vite React app
         working-directory: frontend/survey
-        run: npm run build
+        run: npm run build -- --mode production
 
       - name: Deploy to S3
         uses: aws-actions/configure-aws-credentials@v2
