@@ -127,20 +127,22 @@ export default function TakeSurvey() {
 					Back to Home
 				</button>
 			</div>
-			<div className="max-w-4xl min-w-xl mx-auto mt-10 p-6 bg-gradient-to-br from-blue-50 to-purple-100 rounded-xl shadow-xl h-[600px] flex flex-col">
-				<h2 className="text-2xl font-bold text-purple-800 mb-4">{survey.title}</h2>
+			<div className="w-[95%] sm:w-[540px] md:w-[640px] lg:w-[768px] xl:w-[1024px] mx-auto mt-6 p-4 sm:p-6 bg-gradient-to-br from-blue-50 to-purple-100 rounded-xl shadow-xl h-[90vh] sm:h-[600px] flex flex-col">
+				<h2 className="text-xl sm:text-2xl font-bold text-purple-800 mb-4">{survey.title}</h2>
 
-				<div ref={scrollRef} className="flex-1 overflow-y-auto space-y-3 mb-4 px-2">
+				<div
+					ref={scrollRef}
+					className="flex-1 overflow-y-auto space-y-3 mb-4 px-1 sm:px-2"
+				>
 					{chat.map((msg, idx) => (
 						<div
 							key={idx}
-							className={`flex ${msg.sender === "bot" ? "justify-start" : "justify-end"
-								}`}
+							className={`flex ${msg.sender === "bot" ? "justify-start" : "justify-end"}`}
 						>
 							<div
-								className={`max-w-[85%] px-4 py-2 rounded-2xl transition ${msg.sender === "bot"
-									? "bg-purple-100 text-purple-800"
-									: "bg-blue-400 text-white"
+								className={`max-w-[85%] px-4 py-2 rounded-2xl transition text-sm sm:text-base ${msg.sender === "bot"
+										? "bg-purple-100 text-purple-800"
+										: "bg-blue-400 text-white"
 									}`}
 							>
 								{msg.text}
@@ -148,20 +150,22 @@ export default function TakeSurvey() {
 						</div>
 					))}
 					{typing && (
-						<div className="text-sm text-gray-400 ml-2 animate-pulse">Bot is typing...</div>
+						<div className="text-sm text-gray-400 ml-2 animate-pulse">
+							Bot is typing...
+						</div>
 					)}
 				</div>
 
 				{!completed && (
 					<div className="pt-2 border-t mt-4">
 						{currentQ?.type === "text" && (
-							<div className="flex gap-2">
+							<div className="flex flex-col sm:flex-row gap-2">
 								<input
 									type="text"
 									value={inputValue}
 									onChange={(e) => setInputValue(e.target.value)}
 									onKeyDown={(e) => e.key === "Enter" && handleAnswer(inputValue)}
-									className="flex-1 px-4 py-2 text-gray-700 ounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
+									className="flex-1 px-4 py-2 text-gray-700 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
 									placeholder="Type your answer..."
 								/>
 								<button
@@ -194,13 +198,12 @@ export default function TakeSurvey() {
 										<input
 											type="checkbox"
 											checked={
-												responses.find((r) => r.question === currentQ.text)?.answer?.includes(opt) ||
-												false
+												responses.find((r) => r.question === currentQ.text)?.answer?.includes(opt) || false
 											}
 											onChange={() => handleCheckboxChange(opt)}
 											className="form-checkbox h-4 w-4 text-purple-600"
 										/>
-										<span className="text-purple-800">{opt}</span>
+										<span className="text-purple-800 text-sm">{opt}</span>
 									</label>
 								))}
 								<button
@@ -215,9 +218,8 @@ export default function TakeSurvey() {
 				)}
 
 				{completed && (
-
 					<div className="text-center mt-6">
-						<div className="text-center text-green-600 font-semibold text-lg mb-4">
+						<div className="text-center text-green-600 font-semibold text-base sm:text-lg mb-4">
 							All done! We appreciate your feedback!
 						</div>
 						<button
@@ -229,6 +231,7 @@ export default function TakeSurvey() {
 					</div>
 				)}
 			</div>
+
 		</>
 	);
 }

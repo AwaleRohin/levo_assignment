@@ -29,7 +29,7 @@ export default function SurveyStats() {
 	if (!stats) return <p className="text-center text-red-600 mt-10">Failed to load stats.</p>;
 
 	return (
-		<div className="max-w-3xl mx-auto mt-10 space-y-6 px-6">
+		<div className="w-[95%] sm:w-[540px] md:w-[640px] lg:w-[768px] xl:w-[1024px] mt-10 space-y-6 px-6">
 			<div className="flex justify-between items-center mb-6">
 				<h2 className="text-2xl font-bold text-white-800">
 					Survey Stats: {stats.title}

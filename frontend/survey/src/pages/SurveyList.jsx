@@ -46,7 +46,7 @@ export default function SurveyList() {
   }, []);
 
   return (
-    <div className="max-w-4xl min-w-2xl mx-auto space-y-6">
+    <div className="w-[95%] sm:w-[540px] md:w-[640px] lg:w-[768px] xl:w-[1024px]  mx-auto px-4 sm:px-6 space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-white-900">Surveys</h1>
 				<Link

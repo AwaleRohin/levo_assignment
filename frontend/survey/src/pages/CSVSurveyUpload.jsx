@@ -65,7 +65,7 @@ export default function CSVSurveyUpload() {
     };
 
     return (
-        <div className="max-w-4xl min-w-2xl mx-auto mt-10 px-6">
+        <div className="w-[95%] sm:w-[540px] md:w-[640px] lg:w-[768px] xl:w-[1024px]  mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-white-900">
                     Create New Survey
