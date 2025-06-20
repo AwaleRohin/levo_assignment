@@ -1,3 +1,6 @@
+import csv
+import ast
+from io import TextIOWrapper
 from typing import List, Dict, Any, Optional
 from sqlalchemy.orm import Session
 from survey.models.models import Survey, Question, Response
@@ -162,3 +165,33 @@ class SurveyService:
             })
 
         return stats
+    
+    def create_survey_from_csv(self, file, title: str, description: str) -> Survey:
+        """Parses CSV and creates a survey + questions"""
+        survey_data = {"title": title, "description": description}
+        survey = Survey(**survey_data)
+
+        self.session.add(survey)
+        self.session.flush()
+
+        reader = csv.DictReader(TextIOWrapper(file, encoding='utf-8'))
+        for row in reader:
+            options = row.get('options')
+            try:
+                options = ast.literal_eval(options) if options else None
+            except Exception:
+                options = None
+
+            question = Question(
+                survey_id=survey.id,
+                text=row.get('text', ''),
+                type=row.get('type', 'text'),
+                options=options,
+                required=row.get('required', '').lower() == 'true',
+                order=int(row.get('order', 0)) if row.get('order') else 0
+            )
+            self.session.add(question)
+
+        self.session.commit()
+        self.session.refresh(survey)
+        return survey

@@ -11,6 +11,5 @@ def send_async_email(app, msg):
 
 def send_email(subject, recipients_str, body, html=None):
     recipients = [email.strip() for email in recipients_str.split(',') if email.strip()]
-    print(recipients)
     msg = Message(subject, recipients=recipients, body=body, html=html)
     Thread(target=send_async_email, args=(app, msg)).start()

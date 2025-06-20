@@ -2,18 +2,26 @@ import logging
 import pytz
 from dateutil import parser
 from datetime import timezone
+from typing import Optional
 
-logger = None
+_logger: Optional[logging.Logger] = None
 
+def get_logger() -> logging.Logger:
+    global _logger
+    if _logger is not None:
+        return _logger
 
-def get_logger():
-    global logger
-    if logger is not None:
-        return logger
-    logger = logging.getLogger("survey")
-    logger.addHandler(logging.StreamHandler())
-    logger.setLevel(logging.INFO)
-    return logger
+    _logger = logging.getLogger("survey")
+    if not _logger.handlers:
+        handler = logging.StreamHandler()
+        formatter = logging.Formatter(
+            "[%(asctime)s] [%(levelname)s] %(name)s - %(message)s"
+        )
+        handler.setFormatter(formatter)
+        _logger.addHandler(handler)
+
+    _logger.setLevel(logging.INFO)
+    return _logger
 
 
 def convert_to_utc(datetime_str: str, tz_name: str = "UTC"):

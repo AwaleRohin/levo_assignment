@@ -1,7 +1,5 @@
 import os
 
-logger = None
-
 
 def environment():
     return os.getenv("PROFILE", "dev")
