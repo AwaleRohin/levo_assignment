@@ -179,7 +179,7 @@ export default function TakeSurvey() {
 
 						{currentQ?.type === "multiple-choice" && (
 							<div className="grid grid-cols-1 gap-2 mt-2">
-								{currentQ.options.map((opt) => (
+								{[...new Set(currentQ.options)].map((opt) => (
 									<button
 										key={opt}
 										onClick={() => handleAnswer(opt)}
@@ -193,7 +193,7 @@ export default function TakeSurvey() {
 
 						{currentQ?.type === "checkbox" && (
 							<div className="mt-2">
-								{currentQ.options.map((opt) => (
+								{[...new Set(currentQ.options)].map((opt) => (
 									<label key={opt} className="flex items-center gap-2 mb-2">
 										<input
 											type="checkbox"
