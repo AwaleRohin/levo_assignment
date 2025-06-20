@@ -62,6 +62,7 @@ coverage.xml
 
 # dotenv environment variables
 .env
+.env.production
 
 # Pyre type checker
 .pyre/
