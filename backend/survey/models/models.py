@@ -3,7 +3,7 @@ from survey.app import db, ma
 
 
 class Survey(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, index=True)
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text)
     questions = db.relationship('Question', backref='survey', cascade='all, delete-orphan')
@@ -14,7 +14,7 @@ class Survey(db.Model):
 
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    survey_id = db.Column(db.Integer, db.ForeignKey('survey.id'), nullable=False)
+    survey_id = db.Column(db.Integer, db.ForeignKey('survey.id'), nullable=False, index=True)
     text = db.Column(db.String(500), nullable=False)
     type = db.Column(db.String(50), nullable=False)
     options = db.Column(db.JSON, nullable=True)
@@ -25,7 +25,7 @@ class Question(db.Model):
 
 class Response(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    survey_id = db.Column(db.Integer, db.ForeignKey('survey.id'), nullable=False)
+    survey_id = db.Column(db.Integer, db.ForeignKey('survey.id'), nullable=False, index=True)
     answers = db.Column(db.JSON, nullable=False)
     respondent_email = db.Column(db.String(200),nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.now())
