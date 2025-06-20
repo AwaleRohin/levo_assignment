@@ -12,11 +12,31 @@ from survey.utils.utils import convert_to_utc, get_logger
 logger = get_logger()
 
 class SurveyService:
+    """Service class that handles business logic related to surveys, questions, and responses."""
     def __init__(self, session: Session):
+        """
+        Initialize the SurveyService with a SQLAlchemy session.
+
+        Args:
+            session (Session): SQLAlchemy session for database operations.
+        """
         self.session = session
 
     def create_survey(self, data: Dict[str, Any], questions_data: List[Dict[str, Any]]) -> Survey:
-        """Create a new survey with questions"""
+        """
+        Create a new survey with associated questions.
+
+        If `published` is True, the survey is published immediately.
+        If `published` is False and a `scheduled_time` is provided, the survey is scheduled for future publishing.
+        IF `published` is False and a `scheduled_time` is not provided,, the survey is saved as draft.
+
+        Args:
+            data (dict): Survey data including title, description, published flag, etc.
+            questions_data (List[dict]): List of question data dictionaries.
+
+        Returns:
+            Survey: The created Survey object.
+        """
         published = data.get("published", True)
         scheduled_time_str = data.get("scheduled_time")
         timezone_name = data.pop("timezone", "UTC")
@@ -61,7 +81,18 @@ class SurveyService:
         return survey
 
     def get_survey(self, survey_id: int) -> Survey:
-        """Get a survey by ID"""
+        """
+        Retrieve a survey by its ID.
+
+        Args:
+            survey_id (int): The ID of the survey to retrieve.
+
+        Returns:
+            Survey: The Survey object.
+
+        Raises:
+            SurveyNotFoundError: If the survey with the given ID does not exist.
+        """
         survey = self.session.query(Survey).filter(Survey.id == survey_id).first()
         if not survey:
             logger.warning(f"Survey not found for id={survey_id}")
@@ -69,11 +100,29 @@ class SurveyService:
         return survey
 
     def get_all_surveys(self) -> List[Survey]:
-        """Get all surveys"""
+        """
+        Retrieve all surveys from the database.
+
+        Returns:
+            List[Survey]: A list of all Survey objects.
+        """
         return self.session.query(Survey).all()
 
     def update_survey(self, survey_id: int, data: Dict[str, Any], questions_data: List[Dict[str, Any]]) -> Survey:
-        """Update a survey and its questions"""
+        """
+        Update a survey and replace its questions.
+
+        If the survey is unpublished and `scheduled_time` is provided, it will be scheduled.
+        All existing questions will be deleted and replaced with the new ones.
+
+        Args:
+            survey_id (int): The ID of the survey to update.
+            data (dict): Updated survey data.
+            questions_data (List[dict]): List of new questions.
+
+        Returns:
+            Survey: The updated Survey object.
+        """
         survey = self.get_survey(survey_id)
         published = data.get("published", survey.published or False)
         scheduled_time_str = data.get("scheduled_time", None)
@@ -122,7 +171,12 @@ class SurveyService:
         return survey
 
     def delete_survey(self, survey_id: int) -> None:
-        """Delete a survey and all related data"""
+        """
+        Delete a survey and cascade delete its questions and responses.
+
+        Args:
+            survey_id (int): The ID of the survey to delete.
+        """
         survey = self.get_survey(survey_id)
         
         # Delete related questions and responses
@@ -134,7 +188,17 @@ class SurveyService:
         self.session.commit()
 
     def get_survey_stats(self, survey_id: int) -> Dict[str, Any]:
-        """Get statistics for a survey"""
+        """
+        Retrieve statistics for a single survey.
+
+        Statistics include total number of questions, responses, and creation time.
+
+        Args:
+            survey_id (int): The ID of the survey.
+
+        Returns:
+            dict: A dictionary with statistics for the given survey.
+        """
         survey = self.get_survey(survey_id)
         
         response_count = self.session.query(Response).filter(Response.survey_id == survey_id).count()
@@ -149,6 +213,12 @@ class SurveyService:
         }
 
     def get_all_survey_stats(self) -> List[Dict[str, Any]]:
+        """
+        Retrieve statistics for all published surveys.
+
+        Returns:
+            List[dict]: A list of dictionaries containing survey stats.
+        """
         surveys = self.session.query(Survey).filter(Survey.published==True)
         stats = []
 
@@ -167,7 +237,20 @@ class SurveyService:
         return stats
     
     def create_survey_from_csv(self, file, title: str, description: str) -> Survey:
-        """Parses CSV and creates a survey + questions"""
+        """
+        Parse a CSV file and create a new survey and its questions.
+
+        Expects CSV columns: 'text', 'type', 'options', 'required', 'order'.
+        The 'options' column (for choice-based questions) must be a valid Python list string (e.g., "['Yes', 'No']").
+
+        Args:
+            file (FileStorage): Uploaded CSV file containing question data.
+            title (str): Title for the new survey.
+            description (str): Description of the survey.
+
+        Returns:
+            Survey: The created Survey object.
+        """
         survey_data = {"title": title, "description": description}
         survey = Survey(**survey_data)
 
